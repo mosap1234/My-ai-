@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, session, Response, stream_with_context, redirect, send_from_directory
+from flask import Flask, render_template, render_template_string, request, jsonify, session, Response, stream_with_context, redirect, send_from_directory
 import subprocess
 import os
 import signal
@@ -9,8 +9,9 @@ import shutil
 import json
 
 from apscheduler.schedulers.background import BackgroundScheduler
+from jinja2 import TemplateNotFound
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='.')
 app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'super-secret-key-12345')
 
 VIDEO_DIR = "/app/videos"
@@ -34,6 +35,25 @@ scheduler.start()
 
 # جلب كلمة المرور من متغيرات البيئة في Railway
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', '')
+
+
+def render_index_template(**context):
+    """Render the UI template, with a file-based fallback if Flask can't locate templates."""
+    try:
+        return render_template('index.html', **context)
+    except TemplateNotFound:
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        candidate_paths = [
+            os.path.join(base_dir, 'templates', 'index.html'),
+            os.path.join(base_dir, 'index.html'),
+            '/app/templates/index.html',
+            '/app/index.html',
+        ]
+        for template_path in candidate_paths:
+            if os.path.exists(template_path):
+                with open(template_path, 'r', encoding='utf-8') as template_file:
+                    return render_template_string(template_file.read(), **context)
+        return "Template not found", 500
 
 def get_video_meta(filename):
     """جلب حجم ومدّة الفيديو باستخدام ffprobe"""
@@ -102,7 +122,7 @@ def playlist_runner(stream_key):
 @app.route('/')
 def index():
     if ADMIN_PASSWORD and not session.get('logged_in'):
-        return render_template('index.html', login_required=True)
+        return render_index_template(login_required=True)
         
     raw_videos = [f for f in os.listdir(VIDEO_DIR) if f.endswith(('.mp4', '.mkv', '.avi', '.mov'))]
     videos_with_meta = []
@@ -114,7 +134,7 @@ def index():
             "duration": meta["duration"]
         })
         
-    return render_template('index.html', videos=videos_with_meta, streaming=ffmpeg_process is not None, login_required=False)
+    return render_index_template(videos=videos_with_meta, streaming=ffmpeg_process is not None, login_required=False)
 
 @app.route('/login', methods=['POST'])
 def login():
