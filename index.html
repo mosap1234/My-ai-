@@ -3,132 +3,229 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم بالبث الرقمي الآمن</title>
+    <title>لوحة التحكم بالبث المباشر</title>
+    <!-- استدعاء خط كايرو العصري -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
         :root {
-            --bg-color: #0b0f19;
-            --card-bg: #151f32;
-            --border-color: #243552;
+            /* ألوان متطورة 2026 */
+            --bg-base: #050507;
+            --glass-bg: rgba(20, 25, 35, 0.4);
+            --glass-border: rgba(255, 255, 255, 0.08);
             --text-main: #ffffff;
-            --text-muted: #94a3b8;
-            --primary: #38bdf8;
-            --success: #10b981;
-            --danger: #ef4444;
+            --text-muted: #8b9bb4;
+            
+            /* ألوان الهوية اللامعة */
+            --primary: #00f2fe;
+            --primary-glow: rgba(0, 242, 254, 0.3);
+            --success: #00f260;
+            --danger: #ff0844;
             --warning: #f59e0b;
-            --terminal-bg: #05070c;
         }
 
         body {
-            font-family: system-ui, -apple-system, sans-serif;
-            background-color: var(--bg-color);
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg-base);
             color: var(--text-main);
             margin: 0;
-            padding: 20px;
+            padding: 40px 20px;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* تأثير التوهج الخلفي المتحرك (خرافي وبدون زحمة) */
+        body::before {
+            content: '';
+            position: fixed; top: -20%; left: -10%; width: 50vw; height: 50vh;
+            background: radial-gradient(circle, rgba(0, 242, 254, 0.1) 0%, transparent 70%);
+            z-index: -1; animation: floatBg 15s infinite alternate ease-in-out;
+        }
+        body::after {
+            content: '';
+            position: fixed; bottom: -20%; right: -10%; width: 50vw; height: 50vh;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, transparent 70%);
+            z-index: -1; animation: floatBg 12s infinite alternate-reverse ease-in-out;
+        }
+
+        @keyframes floatBg {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(30px, 30px); }
         }
 
         .container {
-            max-width: 700px;
+            max-width: 750px;
             margin: 0 auto;
+            position: relative;
+            z-index: 1;
         }
 
-        h1, h2, h3 { color: var(--text-main); margin-top: 0; }
+        h1, h2, h3 { font-weight: 800; letter-spacing: -0.5px; }
+        
+        h2 { 
+            font-size: 1.4rem; 
+            margin-bottom: 24px; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+        }
 
+        /* التصميم الزجاجي للكروت */
         .card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 24px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 32px;
             margin-bottom: 24px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.12);
         }
 
-        .form-group { margin-bottom: 16px; }
+        .form-group { margin-bottom: 20px; }
 
         label {
             display: block;
             margin-bottom: 8px;
-            color: var(--text-main);
+            color: var(--text-muted);
             font-weight: 600;
-            font-size: 15px;
+            font-size: 14px;
         }
 
+        /* مدخلات ناعمة جداً */
         input[type="text"], input[type="password"], select {
             width: 100%;
-            padding: 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            background-color: var(--bg-color);
+            padding: 14px 18px;
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.2);
             color: var(--text-main);
-            font-size: 16px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
             box-sizing: border-box;
+            transition: all 0.3s ease;
         }
 
-        input:focus, select:focus { outline: 2px solid var(--primary); }
+        input:focus, select:focus { 
+            outline: none; 
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px var(--primary-glow);
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        select option { background: var(--bg-base); color: #fff; }
 
         .checkbox-group {
-            display: flex; align-items: center; gap: 10px; margin-top: 10px; cursor: pointer;
+            display: flex; align-items: center; gap: 12px; margin-top: 15px; cursor: pointer;
+            padding: 10px; border-radius: 10px; background: rgba(255,255,255,0.02); transition: 0.2s;
         }
-        .checkbox-group input { width: 18px; height: 18px; cursor: pointer; }
+        .checkbox-group:hover { background: rgba(255,255,255,0.05); }
+        .checkbox-group input { width: 20px; height: 20px; accent-color: var(--primary); cursor: pointer; }
 
+        /* أزرار مستقبلية */
         button {
-            width: 100%; padding: 12px; font-size: 16px; font-weight: bold;
-            border: none; border-radius: 6px; cursor: pointer;
-            transition: opacity 0.2s; color: #fff;
+            width: 100%; padding: 16px; font-size: 16px; font-weight: 800; font-family: 'Cairo', sans-serif;
+            border: none; border-radius: 12px; cursor: pointer;
+            transition: all 0.3s ease; color: #fff; position: relative; overflow: hidden;
         }
-        button:hover { opacity: 0.9; }
 
-        .btn-primary { background-color: var(--primary); color: #000; }
-        .btn-success { background-color: var(--success); }
-        .btn-danger { background-color: var(--danger); }
-        .btn-warning { background-color: var(--warning); color: #000; }
+        button:active { transform: scale(0.98); }
 
+        .btn-primary { 
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); 
+            color: #000; box-shadow: 0 8px 20px var(--primary-glow);
+        }
+        .btn-primary:hover { box-shadow: 0 12px 25px var(--primary-glow); filter: brightness(1.1); }
+
+        .btn-success { 
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); 
+            color: #000; box-shadow: 0 8px 20px rgba(56, 239, 125, 0.3);
+        }
+        .btn-success:hover { box-shadow: 0 12px 25px rgba(56, 239, 125, 0.4); filter: brightness(1.1); }
+
+        .btn-danger { 
+            background: linear-gradient(135deg, #ff0844 0%, #ffb199 100%); 
+            color: #fff; box-shadow: 0 8px 20px rgba(255, 8, 68, 0.3);
+        }
+        .btn-danger:hover { box-shadow: 0 12px 25px rgba(255, 8, 68, 0.4); filter: brightness(1.1); }
+
+        /* شارات الحالة */
         .status-badge {
-            display: inline-block; padding: 6px 12px; border-radius: 20px;
-            font-size: 14px; font-weight: bold; margin-bottom: 15px;
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 8px 16px; border-radius: 30px; font-size: 14px; font-weight: 700;
+            margin-bottom: 20px; border: 1px solid;
         }
-        .status-on { background-color: rgba(16, 185, 129, 0.2); color: var(--success); }
-        .status-off { background-color: rgba(239, 68, 68, 0.2); color: var(--danger); }
+        .status-on { 
+            background: rgba(16, 185, 129, 0.1); color: var(--success); 
+            border-color: rgba(16, 185, 129, 0.2); box-shadow: 0 0 15px rgba(16, 185, 129, 0.1);
+        }
+        .status-off { 
+            background: rgba(239, 68, 68, 0.1); color: var(--danger); 
+            border-color: rgba(239, 68, 68, 0.2);
+        }
+        /* نقطة تنبض للبث الحي */
+        .pulse-dot {
+            width: 8px; height: 8px; border-radius: 50%; background-color: currentColor;
+            box-shadow: 0 0 10px currentColor; animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.2); } 100% { opacity: 1; transform: scale(1); } }
 
+        /* قائمة الفيديوهات */
         .video-item {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 12px; border-bottom: 1px solid var(--border-color);
+            padding: 16px; border-radius: 12px; background: rgba(255, 255, 255, 0.02);
+            margin-bottom: 10px; border: 1px solid transparent; transition: 0.3s;
         }
-        .video-item:last-child { border-bottom: none; }
-        .video-info { display: flex; flex-direction: column; gap: 4px; }
-        .video-name { font-weight: 500; color: var(--text-main); word-break: break-all; }
-        .video-meta { font-size: 13px; color: var(--text-muted); }
-        .btn-delete { width: auto; padding: 6px 12px; font-size: 13px; background-color: var(--danger); }
+        .video-item:hover { background: rgba(255, 255, 255, 0.04); border-color: var(--glass-border); }
+        .video-info { display: flex; flex-direction: column; gap: 6px; }
+        .video-name { font-weight: 700; color: var(--text-main); word-break: break-all; font-size: 15px; }
+        .video-meta { font-size: 13px; color: var(--text-muted); font-weight: 600; }
+        
+        .btn-delete { 
+            width: auto; padding: 8px 16px; font-size: 13px; border-radius: 8px;
+            background: rgba(255, 8, 68, 0.1); color: var(--danger); box-shadow: none;
+        }
+        .btn-delete:hover { background: var(--danger); color: #fff; }
 
+        /* التيرمنال (سجل التحميل) */
         .terminal {
-            background-color: var(--terminal-bg); border: 1px solid var(--border-color);
-            border-radius: 8px; padding: 12px; font-family: monospace; font-size: 13px;
-            color: #38bdf8; height: 170px; overflow-y: auto; direction: ltr;
-            text-align: left; white-space: pre-wrap; margin-top: 10px; display: none;
+            background: #020203; border: 1px solid var(--glass-border);
+            border-radius: 12px; padding: 16px; font-family: 'Courier New', Courier, monospace; 
+            font-size: 13px; color: var(--primary); height: 200px; overflow-y: auto; 
+            direction: ltr; text-align: left; white-space: pre-wrap; margin-top: 15px; 
+            display: none; box-shadow: inset 0 4px 20px rgba(0,0,0,0.5);
         }
+        
+        /* تخصيص السكرول بار */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
 
-        .header-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .logout-link { color: var(--danger); text-decoration: none; font-size: 14px; }
+        .header-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .header-area h1 { margin: 0; font-size: 1.8rem; background: linear-gradient(to right, #fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logout-link { 
+            color: var(--text-muted); text-decoration: none; font-size: 14px; font-weight: 700; 
+            padding: 8px 16px; border-radius: 20px; background: rgba(255,255,255,0.05); transition: 0.3s;
+        }
+        .logout-link:hover { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+        
+        /* تنسيق رفع الملفات (الكوكيز) */
+        input[type="file"]::file-selector-button {
+            background: rgba(255,255,255,0.1); color: #fff; border: none; padding: 8px 16px;
+            border-radius: 8px; font-family: 'Cairo'; cursor: pointer; transition: 0.3s; margin-inline-end: 10px;
+        }
+        input[type="file"]::file-selector-button:hover { background: rgba(255,255,255,0.2); }
 
-        /* تنسيقات الإحصائيات */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-top: 20px;
-            display: none;
-        }
-        .stat-box {
-            background: var(--bg-color); border: 1px solid var(--border-color);
-            border-radius: 8px; padding: 15px; text-align: center;
-        }
-        .stat-value { font-size: 24px; font-weight: bold; color: var(--primary); margin-top: 5px; }
-        .stat-label { font-size: 13px; color: var(--text-muted); }
-        .pulse { animation: pulse-animation 2s infinite; }
-        @keyframes pulse-animation {
-            0% { color: var(--primary); }
-            50% { color: var(--success); }
-            100% { color: var(--primary); }
-        }
     </style>
 </head>
 <body>
@@ -136,13 +233,14 @@
 <div class="container">
 
     {% if login_required %}
-    <div class="card" style="margin-top: 100px;">
-        <h2 style="text-align: center;">🔒 نظام البث محمي</h2>
-        <p style="text-align: center; color: var(--text-muted);">الرجاء إدخال كلمة السر للمتابعة</p>
+    <div class="card" style="margin-top: 15vh; text-align: center; padding: 50px 30px;">
+        <div style="font-size: 40px; margin-bottom: 10px;">🔒</div>
+        <h2>نظام البث محمي</h2>
+        <p style="color: var(--text-muted); margin-bottom: 30px;">الرجاء إدخال كلمة السر الخاصة بالمسؤول للمتابعة</p>
         <div class="form-group">
-            <input type="password" id="login_pass" placeholder="كلمة المرور">
+            <input type="password" id="login_pass" placeholder="كلمة المرور..." style="text-align: center; font-size: 18px; padding: 16px;">
         </div>
-        <button class="btn-primary" onclick="submitLogin()">دخول</button>
+        <button class="btn-primary" onclick="submitLogin()">تسجيل الدخول</button>
     </div>
 
     <script>
@@ -161,17 +259,21 @@
 
     {% else %}
     <div class="header-area">
-        <h1>📺 لوحة تحكم البث 24/7</h1>
+        <h1>ستوديو البث الرقمي</h1>
         <a href="/logout" class="logout-link">تسجيل الخروج 🔓</a>
     </div>
 
     <div class="card">
         <h2>📡 إدارة البث المباشر</h2>
         {% if streaming %}
-            <div class="status-badge status-on">● البث يعمل حالياً ومستمر</div>
+            <div class="status-badge status-on">
+                <span class="pulse-dot"></span> البث يعمل حالياً ومستمر
+            </div>
             <button class="btn-danger" onclick="stopStream()">🛑 إيقاف البث فوراً</button>
         {% else %}
-            <div class="status-badge status-off">○ البث متوقف حالياً</div>
+            <div class="status-badge status-off">
+                <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:currentColor;"></span> البث متوقف حالياً
+            </div>
             <div class="form-group">
                 <label>مفتاح بث يوتيوب (Stream Key):</label>
                 <input type="text" id="stream_key" placeholder="XXXX-XXXX-XXXX-XXXX">
@@ -186,7 +288,6 @@
                 </select>
             </div>
             
-            <!-- إضافة مدة البث هنا -->
             <div class="form-group">
                 <label>⏱️ تحديد مدة البث (سيتوقف آلياً):</label>
                 <select id="stream_duration">
@@ -207,81 +308,49 @@
                     <span>تفعيل التكرار التلقائي واللانهائي للملف 🔁</span>
                 </label>
             </div>
-            <button class="btn-success" onclick="startStream()">🚀 بدء البث الآن</button>
+            <button class="btn-success" onclick="startStream()" style="margin-top: 10px;">🚀 بدء البث الآن</button>
         {% endif %}
     </div>
 
-    <!-- ميزة إحصائيات البث المباشر تظهر فقط إذا كان البث يعمل -->
-    {% if streaming %}
     <div class="card">
-        <h2>📊 إحصائيات البث الحية (YouTube API)</h2>
-        <div id="api_inputs">
-            <div class="form-group">
-                <label>رابط فيديو البث المباشر على يوتيوب:</label>
-                <input type="text" id="yt_video_id" placeholder="مثال: https://youtube.com/watch?v=....">
-            </div>
-            <div class="form-group">
-                <label>مفتاح YouTube API Key:</label>
-                <input type="password" id="yt_api_key" placeholder="AIzaSyB...">
-            </div>
-            <button class="btn-warning" onclick="startStats()">بدء سحب الإحصائيات 📡</button>
-        </div>
-
-        <div id="stats_error" style="color: var(--danger); margin-top: 10px; display: none;"></div>
-
-        <div class="stats-grid" id="stats_grid">
-            <div class="stat-box">
-                <div class="stat-label">🔴 المشاهدين حالياً</div>
-                <div class="stat-value pulse" id="stat_viewers">0</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-label">👍 إجمالي اللايكات</div>
-                <div class="stat-value" id="stat_likes">0</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-label">👁️ إجمالي المشاهدات</div>
-                <div class="stat-value" id="stat_views">0</div>
-            </div>
-        </div>
-    </div>
-    {% endif %}
-
-    <div class="card">
-        <h2>📥 تحميل فيديو جديد من يوتيوب</h2>
+        <h2>📥 أداة السحب من يوتيوب</h2>
         <div class="form-group">
             <label>رابط فيديو اليوتيوب:</label>
             <input type="text" id="youtube_url" placeholder="https://www.youtube.com/watch?v=...">
         </div>
         <button class="btn-primary" id="btn_download" onclick="downloadVideo()">ابدأ التحميل الآن</button>
         
-        <div class="form-group" style="margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 15px;">
-            <label>🍪 تحديث ملف الكوكيز الذكي (cookies.txt):</label>
-            <div style="display: flex; gap: 10px;">
-                <input type="file" id="cookies_file" accept=".txt" style="background: var(--bg-color); color: white; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; flex-grow: 1;">
-                <button class="btn-primary" style="width: auto; white-space: nowrap; padding: 0 20px; color:#000;" onclick="uploadCookies()">رفع 📤</button>
+        <div class="form-group" style="margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--glass-border);">
+            <label>🍪 تحديث ملف الكوكيز (التجاوز الذكي):</label>
+            <div style="display: flex; gap: 12px; align-items: center;">
+                <input type="file" id="cookies_file" accept=".txt" style="flex-grow: 1; padding: 10px; background: rgba(0,0,0,0.2); border: 1px dashed var(--glass-border); border-radius: 12px;">
+                <button class="btn-primary" style="width: auto; padding: 12px 24px;" onclick="uploadCookies()">رفع 📤</button>
             </div>
         </div>
 
-        <div id="log_header" style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; display: none;">
-            <label style="margin: 0;">📄 لوج التحميل الحي:</label>
-            <button class="btn-primary" id="btn_copy_log" style="width: auto; padding: 4px 12px; font-size: 13px; color: #000;" onclick="copyLog()">نسخ اللوج 📋</button>
+        <div id="log_header" style="display: flex; justify-content: space-between; align-items: center; margin-top: 25px; display: none;">
+            <label style="margin: 0; color: var(--primary);">📄 سجل العمليات الحي:</label>
+            <button class="btn-primary" id="btn_copy_log" style="width: auto; padding: 6px 16px; font-size: 13px; border-radius: 8px; box-shadow: none;" onclick="copyLog()">نسخ السجل 📋</button>
         </div>
         <div class="terminal" id="log_terminal"></div>
     </div>
 
     <div class="card">
-        <h2>📂 الفيديوهات المخزنة بالسيرفر ({{ videos|length }})</h2>
+        <h2>📂 مساحة التخزين السحابية ({{ videos|length }})</h2>
         {% if not videos %}
-            <p style="color: var(--text-muted); text-align: center;">لا توجد فيديوهات محملة حالياً.</p>
+            <div style="text-align: center; padding: 30px; background: rgba(0,0,0,0.2); border-radius: 12px; border: 1px dashed var(--glass-border);">
+                <div style="font-size: 30px; margin-bottom: 10px; opacity: 0.5;">📭</div>
+                <p style="color: var(--text-muted); margin: 0;">لا توجد فيديوهات محملة في السيرفر حالياً.</p>
+            </div>
         {% else %}
             <div>
                 {% for video in videos %}
                     <div class="video-item">
                         <div class="video-info">
                             <span class="video-name">{{ video.name }}</span>
-                            <span class="video-meta">⏱️ المدة: {{ video.duration }} | 💾 الحجم: {{ video.size }}</span>
+                            <span class="video-meta">⏱️ {{ video.duration }} &nbsp; | &nbsp; 💾 {{ video.size }}</span>
                         </div>
-                        <button class="btn-delete" onclick="deleteVideo('{{ video.name }}')">حذف 🗑️</button>
+                        <button class="btn-delete" onclick="deleteVideo('{{ video.name }}')">حذف</button>
                     </div>
                 {% endfor %}
             </div>
@@ -289,7 +358,6 @@
     </div>
 
     <script>
-        // دالة بدء البث المحدثة مع جلب قيمة المدة
         function startStream() {
             const key = document.getElementById('stream_key').value;
             const file = document.getElementById('video_file').value;
@@ -314,75 +382,6 @@
             .then(res => res.json()).then(data => {
                 alert(data.message);
                 location.reload();
-            });
-        }
-
-        // إعدادات سحب الإحصائيات الحية
-        let statsInterval = null;
-
-        // تحميل الـ API key والـ URL المحفوظة مسبقاً إذا كانت موجودة
-        window.onload = () => {
-            const savedKey = localStorage.getItem('yt_api_key');
-            const savedUrl = localStorage.getItem('yt_video_id');
-            if(document.getElementById('yt_api_key') && savedKey) {
-                document.getElementById('yt_api_key').value = savedKey;
-            }
-            if(document.getElementById('yt_video_id') && savedUrl) {
-                document.getElementById('yt_video_id').value = savedUrl;
-            }
-        };
-
-        function startStats() {
-            let videoInput = document.getElementById('yt_video_id').value;
-            const apiKey = document.getElementById('yt_api_key').value;
-            const errorDiv = document.getElementById('stats_error');
-            const gridDiv = document.getElementById('stats_grid');
-
-            if(!videoInput || !apiKey) {
-                errorDiv.innerText = "الرجاء إدخال رابط الفيديو ومفتاح الـ API";
-                errorDiv.style.display = "block";
-                return;
-            }
-
-            // استخراج الـ ID من الرابط الطويل لو المستخدم حط رابط بدال الـ ID
-            let videoId = videoInput;
-            const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
-            const match = videoInput.match(regex);
-            if(match && match[1]) {
-                videoId = match[1];
-            }
-
-            // حفظ البيانات بالمتصفح عشان مايكتبها كل شوي
-            localStorage.setItem('yt_api_key', apiKey);
-            localStorage.setItem('yt_video_id', videoInput);
-
-            errorDiv.style.display = "none";
-            gridDiv.style.display = "grid";
-            document.getElementById('api_inputs').style.display = "none"; // اخفاء الحقول بعد التشغيل
-
-            fetchStats(videoId, apiKey);
-            // تحديث الإحصائيات كل 10 ثواني
-            statsInterval = setInterval(() => { fetchStats(videoId, apiKey); }, 10000);
-        }
-
-        function fetchStats(videoId, apiKey) {
-            const errorDiv = document.getElementById('stats_error');
-            fetch(`/api/stats?video_id=${videoId}&api_key=${apiKey}`)
-            .then(res => res.json())
-            .then(data => {
-                if(data.error) {
-                    errorDiv.innerText = data.error;
-                    errorDiv.style.display = "block";
-                    clearInterval(statsInterval);
-                    document.getElementById('api_inputs').style.display = "block";
-                } else {
-                    document.getElementById('stat_viewers').innerText = Number(data.viewers).toLocaleString('ar-EG');
-                    document.getElementById('stat_likes').innerText = Number(data.likes).toLocaleString('ar-EG');
-                    document.getElementById('stat_views').innerText = Number(data.total_views).toLocaleString('ar-EG');
-                }
-            })
-            .catch(err => {
-                console.error("فشل الاتصال بالخادم", err);
             });
         }
 
@@ -454,7 +453,7 @@
                         alert("اكتمل التحميل بنجاح!");
                         location.reload();
                     } else {
-                        alert("حدث خطأ أثناء التحميل، تفقد اللوج الأسود.");
+                        alert("حدث خطأ أثناء التحميل، تفقد اللوج.");
                     }
                 }
             };
