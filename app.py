@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, jsonify, session, Response, s
 import subprocess
 import os
 import signal
+import shutil
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'super-secret-key-12345')
@@ -31,7 +32,6 @@ def get_video_meta(filename):
     return {"size": f"{size_mb} MB", "duration": duration_str}
 
 def check_process_status():
-    """التحقق مما إذا كان البث قد توقف تلقائياً بسبب انتهاء الوقت"""
     global ffmpeg_process
     if ffmpeg_process is not None:
         if ffmpeg_process.poll() is not None:
@@ -43,6 +43,15 @@ def index():
         return render_template('index.html', login_required=True)
     
     check_process_status()
+    
+    # حساب مساحة السيرفر
+    total, used, free = shutil.disk_usage(VIDEO_DIR)
+    disk_stats = {
+        "total": round(total / (1024**3), 2),
+        "used": round(used / (1024**3), 2),
+        "free": round(free / (1024**3), 2),
+        "percent": min(100, int((used / total) * 100)) if total > 0 else 0
+    }
         
     raw_videos = [f for f in os.listdir(VIDEO_DIR) if f.endswith(('.mp4', '.mkv', '.avi', '.mov'))]
     videos_with_meta = []
@@ -54,7 +63,7 @@ def index():
             "duration": meta["duration"]
         })
         
-    return render_template('index.html', videos=videos_with_meta, streaming=ffmpeg_process is not None, login_required=False)
+    return render_template('index.html', videos=videos_with_meta, streaming=ffmpeg_process is not None, login_required=False, disk_stats=disk_stats)
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -84,6 +93,29 @@ def upload_cookies():
     try:
         file.save("/app/cookies.txt")
         return jsonify({"status": "success", "message": "🍪 تم رفع وتحديث ملف الكوكيز بنجاح في السيرفر!"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
+
+# مسار جديد للرفع المباشر من الجهاز
+@app.route('/upload_video', methods=['POST'])
+def upload_video():
+    if ADMIN_PASSWORD and not session.get('logged_in'):
+        return jsonify({"status": "error", "message": "غير مصرح لك"})
+        
+    if 'local_video' not in request.files:
+        return jsonify({"status": "error", "message": "لم يتم اختيار أي فيديو!"})
+        
+    file = request.files['local_video']
+    if file.filename == '':
+        return jsonify({"status": "error", "message": "اسم الملف فارغ!"})
+        
+    if not file.filename.lower().endswith(('.mp4', '.mkv', '.avi', '.mov')):
+        return jsonify({"status": "error", "message": "يرجى رفع ملف فيديو صالح (mp4, mkv, avi, mov)"})
+        
+    try:
+        save_path = os.path.join(VIDEO_DIR, file.filename)
+        file.save(save_path)
+        return jsonify({"status": "success", "message": "✅ تم رفع الفيديو من جهازك للسيرفر بنجاح!"})
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)})
 
