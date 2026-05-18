@@ -5,17 +5,17 @@ RUN apt-get update && apt-get install -y ffmpeg curl nodejs && rm -rf /var/lib/a
 
 WORKDIR /app
 
-# تثبيت الفلاسك وأداة تحميل اليوتيوب yt-dlp
-RUN pip install flask yt-dlp apscheduler requests
+# تثبيت الاعتماديات من ملف المشروع
+COPY requirements.txt /app/requirements.txt
+RUN python -m pip install --upgrade pip && python -m pip install --no-cache-dir -r /app/requirements.txt
 
 # إنشاء مجلدات القوالب والفيديوهات داخل الحاوية
 RUN mkdir -p /app/templates /app/videos
 
-# نسخ ملفات المشروع من جيت هاب إلى داخل الحاوية
+# نسخ ملفات المشروع إلى داخل الحاوية
 COPY app.py /app/app.py
 COPY index.html /app/templates/index.html
-# نسخ ملف الكوكيز إن وجد
-COPY cookies.txt* /app/
+COPY index.html /app/index.html
 
 EXPOSE 8080
 
