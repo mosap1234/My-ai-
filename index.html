@@ -14,6 +14,7 @@
             --primary: #38bdf8;
             --success: #10b981;
             --danger: #ef4444;
+            --warning: #f59e0b;
             --terminal-bg: #05070c;
         }
 
@@ -30,10 +31,7 @@
             margin: 0 auto;
         }
 
-        h1, h2, h3 {
-            color: var(--text-main);
-            margin-top: 0;
-        }
+        h1, h2, h3 { color: var(--text-main); margin-top: 0; }
 
         .card {
             background-color: var(--card-bg);
@@ -44,9 +42,7 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
         }
 
-        .form-group {
-            margin-bottom: 16px;
-        }
+        .form-group { margin-bottom: 16px; }
 
         label {
             display: block;
@@ -67,65 +63,35 @@
             box-sizing: border-box;
         }
 
-        input:focus, select:focus {
-            outline: 2px solid var(--primary);
-        }
+        input:focus, select:focus { outline: 2px solid var(--primary); }
 
         .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 10px;
-            cursor: pointer;
+            display: flex; align-items: center; gap: 10px; margin-top: 10px; cursor: pointer;
         }
-
-        .checkbox-group input {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-        }
+        .checkbox-group input { width: 18px; height: 18px; cursor: pointer; }
 
         button {
-            width: 100%;
-            padding: 12px;
-            font-size: 16px;
-            font-weight: bold;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: opacity 0.2s;
-            color: #fff;
+            width: 100%; padding: 12px; font-size: 16px; font-weight: bold;
+            border: none; border-radius: 6px; cursor: pointer;
+            transition: opacity 0.2s; color: #fff;
         }
-
         button:hover { opacity: 0.9; }
 
         .btn-primary { background-color: var(--primary); color: #000; }
         .btn-success { background-color: var(--success); }
         .btn-danger { background-color: var(--danger); }
-        .btn-secondary { background-color: transparent; border: 1px solid var(--border-color); color: var(--text-main); }
-        .btn-ghost { background: none; border: 1px dashed rgba(255,255,255,0.06); color: var(--text-main); }
-
-        button.small { padding:6px 8px; font-size:13px; }
-
-        .video-item div button:hover, .card button:hover { transform: translateY(-1px); }
+        .btn-warning { background-color: var(--warning); color: #000; }
 
         .status-badge {
-            display: inline-block;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: bold;
-            margin-bottom: 15px;
+            display: inline-block; padding: 6px 12px; border-radius: 20px;
+            font-size: 14px; font-weight: bold; margin-bottom: 15px;
         }
         .status-on { background-color: rgba(16, 185, 129, 0.2); color: var(--success); }
         .status-off { background-color: rgba(239, 68, 68, 0.2); color: var(--danger); }
 
         .video-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            border-bottom: 1px solid var(--border-color);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px; border-bottom: 1px solid var(--border-color);
         }
         .video-item:last-child { border-bottom: none; }
         .video-info { display: flex; flex-direction: column; gap: 4px; }
@@ -134,31 +100,35 @@
         .btn-delete { width: auto; padding: 6px 12px; font-size: 13px; background-color: var(--danger); }
 
         .terminal {
-            background-color: var(--terminal-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 12px;
-            font-family: monospace;
-            font-size: 13px;
-            color: #38bdf8;
-            height: 170px;
-            overflow-y: auto;
-            direction: ltr;
-            text-align: left;
-            white-space: pre-wrap;
-            margin-top: 10px;
+            background-color: var(--terminal-bg); border: 1px solid var(--border-color);
+            border-radius: 8px; padding: 12px; font-family: monospace; font-size: 13px;
+            color: #38bdf8; height: 170px; overflow-y: auto; direction: ltr;
+            text-align: left; white-space: pre-wrap; margin-top: 10px; display: none;
+        }
+
+        .header-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .logout-link { color: var(--danger); text-decoration: none; font-size: 14px; }
+
+        /* تنسيقات الإحصائيات */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
             display: none;
         }
-
-        #playlist_items { max-height: 160px; overflow:auto; border-top:1px solid var(--border-color); padding-top:8px; }
-
-        .header-area {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
+        .stat-box {
+            background: var(--bg-color); border: 1px solid var(--border-color);
+            border-radius: 8px; padding: 15px; text-align: center;
         }
-        .logout-link { color: var(--danger); text-decoration: none; font-size: 14px; }
+        .stat-value { font-size: 24px; font-weight: bold; color: var(--primary); margin-top: 5px; }
+        .stat-label { font-size: 13px; color: var(--text-muted); }
+        .pulse { animation: pulse-animation 2s infinite; }
+        @keyframes pulse-animation {
+            0% { color: var(--primary); }
+            50% { color: var(--success); }
+            100% { color: var(--primary); }
+        }
     </style>
 </head>
 <body>
@@ -215,6 +185,22 @@
                     {% endfor %}
                 </select>
             </div>
+            
+            <!-- إضافة مدة البث هنا -->
+            <div class="form-group">
+                <label>⏱️ تحديد مدة البث (سيتوقف آلياً):</label>
+                <select id="stream_duration">
+                    <option value="0">مفتوح (بث مستمر 24/7 ولن يتوقف)</option>
+                    <option value="3600">ساعة واحدة</option>
+                    <option value="7200">ساعتين</option>
+                    <option value="21600">6 ساعات</option>
+                    <option value="43200">12 ساعة</option>
+                    <option value="86400">يوم كامل (24 ساعة)</option>
+                    <option value="172800">يومين (48 ساعة)</option>
+                    <option value="259200">3 أيام (72 ساعة)</option>
+                </select>
+            </div>
+
             <div class="form-group">
                 <label class="checkbox-group">
                     <input type="checkbox" id="loop_video" checked>
@@ -224,6 +210,41 @@
             <button class="btn-success" onclick="startStream()">🚀 بدء البث الآن</button>
         {% endif %}
     </div>
+
+    <!-- ميزة إحصائيات البث المباشر تظهر فقط إذا كان البث يعمل -->
+    {% if streaming %}
+    <div class="card">
+        <h2>📊 إحصائيات البث الحية (YouTube API)</h2>
+        <div id="api_inputs">
+            <div class="form-group">
+                <label>رابط فيديو البث المباشر على يوتيوب:</label>
+                <input type="text" id="yt_video_id" placeholder="مثال: https://youtube.com/watch?v=....">
+            </div>
+            <div class="form-group">
+                <label>مفتاح YouTube API Key:</label>
+                <input type="password" id="yt_api_key" placeholder="AIzaSyB...">
+            </div>
+            <button class="btn-warning" onclick="startStats()">بدء سحب الإحصائيات 📡</button>
+        </div>
+
+        <div id="stats_error" style="color: var(--danger); margin-top: 10px; display: none;"></div>
+
+        <div class="stats-grid" id="stats_grid">
+            <div class="stat-box">
+                <div class="stat-label">🔴 المشاهدين حالياً</div>
+                <div class="stat-value pulse" id="stat_viewers">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">👍 إجمالي اللايكات</div>
+                <div class="stat-value" id="stat_likes">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">👁️ إجمالي المشاهدات</div>
+                <div class="stat-value" id="stat_views">0</div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 
     <div class="card">
         <h2>📥 تحميل فيديو جديد من يوتيوب</h2>
@@ -260,99 +281,26 @@
                             <span class="video-name">{{ video.name }}</span>
                             <span class="video-meta">⏱️ المدة: {{ video.duration }} | 💾 الحجم: {{ video.size }}</span>
                         </div>
-                        <div style="display:flex; gap:8px; align-items:center;">
-                            <button class="btn-primary rename-btn" data-file="{{ video.name|e }}" style="padding:6px 10px;">✏️ تعديل</button>
-                            <button class="btn-primary download-btn" data-file="{{ video.name|e }}" style="padding:6px 10px;">⬇️ تنزيل</button>
-                            <button class="btn-delete delete-btn" data-file="{{ video.name|e }}">حذف 🗑️</button>
-                        </div>
+                        <button class="btn-delete" onclick="deleteVideo('{{ video.name }}')">حذف 🗑️</button>
                     </div>
                 {% endfor %}
             </div>
         {% endif %}
     </div>
 
-    <div class="card">
-        <h2>🔀 قائمة التشغيل (Playlist)</h2>
-        <div class="form-group">
-            <label>اختر فيديو لإضافته للقائمة:</label>
-            <select id="playlist_select">
-                <option value="">-- اختر فيديو --</option>
-                {% for video in videos %}
-                    <option value="{{ video.name }}">{{ video.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div style="display:flex; gap:10px; margin-bottom:10px;">
-            <button class="btn-primary" style="flex:1;" onclick="addToPlaylist()">أضف للقائمة ➕</button>
-            <button class="btn-primary" style="flex:1;" onclick="showPlaylist()">عرض القائمة 🔎</button>
-        </div>
-        <div class="form-group">
-            <label class="checkbox-group"><input type="checkbox" id="pl_shuffle"> تفعيل التكرار العشوائي (Shuffle)</label>
-            <label class="checkbox-group" style="margin-top:8px;"><input type="checkbox" id="pl_repeat"> تكرار القائمة بالكامل (Repeat)</label>
-        </div>
-        <div style="display:flex; gap:10px;">
-            <input type="text" id="pl_stream_key" placeholder="مفتاح البث (عند البدء من خلال القائمة)">
-            <button class="btn-success" style="width:180px;" onclick="startPlaylist()">▶️ بدء القائمة</button>
-            <button class="btn-danger" style="width:140px;" onclick="stopPlaylist()">■ إيقاف القائمة</button>
-        </div>
-        <div id="playlist_holder" style="margin-top:12px; display:none;">
-            <h3 style="margin:8px 0;">عناصر القائمة:</h3>
-            <div id="playlist_items"></div>
-        </div>
-    </div>
-
-    <div class="card">
-        <h2>🕒 جدولة البث (Scheduler)</h2>
-        <div class="form-group">
-            <label>اختر فيديو للجدولة:</label>
-            <select id="sched_video">
-                <option value="">-- اختر فيديو --</option>
-                {% for video in videos %}
-                    <option value="{{ video.name }}">{{ video.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="form-group">
-            <label>تاريخ ووقت البداية:</label>
-            <input type="datetime-local" id="sched_time">
-        </div>
-        <div class="form-group">
-            <label>مدة البث بالساعات (عشري، اختياري):</label>
-            <input type="number" step="0.01" min="0" id="sched_duration" placeholder="مثلاً: 1.25">
-            <div style="color:var(--text-muted); font-size:13px; margin-top:6px;">ادخل القيمة بالساعات، مثلاً 1.5 تعني ساعة ونصف.</div>
-        </div>
-        <div style="display:flex; gap:10px;">
-            <button class="btn-primary" style="flex:1;" onclick="addSchedule()">أضف للجدولة ✅</button>
-            <button class="btn-primary" style="flex:1;" onclick="listSchedule()">عرض المهام المجدولة</button>
-        </div>
-        <div id="sched_list" style="margin-top:12px; display:none; color: var(--text-muted);"></div>
-    </div>
-
-    <div class="card">
-        <h2>🗄️ مدير الملفات + سعة التخزين</h2>
-        <div style="display:flex; gap:10px; margin-bottom:10px;">
-            <button class="btn-primary" onclick="getDiskUsage()">عرض المساحة المتبقية</button>
-            <button class="btn-primary" onclick="location.reload()">تحديث القائمة</button>
-        </div>
-        <div class="form-group">
-            <label>إعادة تسمية ملف:</label>
-            <input type="text" id="rename_old" placeholder="الاسم الحالي">
-            <input type="text" id="rename_new" placeholder="الاسم الجديد" style="margin-top:8px;">
-            <button class="btn-primary" style="margin-top:8px;" onclick="renameVideo()">إعادة التسمية</button>
-        </div>
-        <div id="disk_info" style="margin-top:12px; color: var(--text-muted);"></div>
-    </div>
-
     <script>
+        // دالة بدء البث المحدثة مع جلب قيمة المدة
         function startStream() {
             const key = document.getElementById('stream_key').value;
             const file = document.getElementById('video_file').value;
             const loop = document.getElementById('loop_video').checked;
+            const duration = document.getElementById('stream_duration').value;
             
             const formData = new FormData();
             formData.append('stream_key', key);
             formData.append('video_file', file);
             formData.append('loop', loop);
+            formData.append('duration', duration);
 
             fetch('/start', { method: 'POST', body: formData })
             .then(res => res.json()).then(data => {
@@ -366,6 +314,75 @@
             .then(res => res.json()).then(data => {
                 alert(data.message);
                 location.reload();
+            });
+        }
+
+        // إعدادات سحب الإحصائيات الحية
+        let statsInterval = null;
+
+        // تحميل الـ API key والـ URL المحفوظة مسبقاً إذا كانت موجودة
+        window.onload = () => {
+            const savedKey = localStorage.getItem('yt_api_key');
+            const savedUrl = localStorage.getItem('yt_video_id');
+            if(document.getElementById('yt_api_key') && savedKey) {
+                document.getElementById('yt_api_key').value = savedKey;
+            }
+            if(document.getElementById('yt_video_id') && savedUrl) {
+                document.getElementById('yt_video_id').value = savedUrl;
+            }
+        };
+
+        function startStats() {
+            let videoInput = document.getElementById('yt_video_id').value;
+            const apiKey = document.getElementById('yt_api_key').value;
+            const errorDiv = document.getElementById('stats_error');
+            const gridDiv = document.getElementById('stats_grid');
+
+            if(!videoInput || !apiKey) {
+                errorDiv.innerText = "الرجاء إدخال رابط الفيديو ومفتاح الـ API";
+                errorDiv.style.display = "block";
+                return;
+            }
+
+            // استخراج الـ ID من الرابط الطويل لو المستخدم حط رابط بدال الـ ID
+            let videoId = videoInput;
+            const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
+            const match = videoInput.match(regex);
+            if(match && match[1]) {
+                videoId = match[1];
+            }
+
+            // حفظ البيانات بالمتصفح عشان مايكتبها كل شوي
+            localStorage.setItem('yt_api_key', apiKey);
+            localStorage.setItem('yt_video_id', videoInput);
+
+            errorDiv.style.display = "none";
+            gridDiv.style.display = "grid";
+            document.getElementById('api_inputs').style.display = "none"; // اخفاء الحقول بعد التشغيل
+
+            fetchStats(videoId, apiKey);
+            // تحديث الإحصائيات كل 10 ثواني
+            statsInterval = setInterval(() => { fetchStats(videoId, apiKey); }, 10000);
+        }
+
+        function fetchStats(videoId, apiKey) {
+            const errorDiv = document.getElementById('stats_error');
+            fetch(`/api/stats?video_id=${videoId}&api_key=${apiKey}`)
+            .then(res => res.json())
+            .then(data => {
+                if(data.error) {
+                    errorDiv.innerText = data.error;
+                    errorDiv.style.display = "block";
+                    clearInterval(statsInterval);
+                    document.getElementById('api_inputs').style.display = "block";
+                } else {
+                    document.getElementById('stat_viewers').innerText = Number(data.viewers).toLocaleString('ar-EG');
+                    document.getElementById('stat_likes').innerText = Number(data.likes).toLocaleString('ar-EG');
+                    document.getElementById('stat_views').innerText = Number(data.total_views).toLocaleString('ar-EG');
+                }
+            })
+            .catch(err => {
+                console.error("فشل الاتصال بالخادم", err);
             });
         }
 
@@ -449,107 +466,6 @@
                 terminal.innerHTML += "\n[ERROR] انقطع الاتصال المباشر بالسيرفر.";
             };
         }
-
-        // Playlist functions
-        function addToPlaylist() {
-            const sel = document.getElementById('playlist_select').value;
-            if(!sel) { alert('اختر فيديو أولاً'); return; }
-            const fd = new FormData(); fd.append('video_file', sel);
-            fetch('/playlist/add', { method: 'POST', body: fd })
-            .then(r=>r.json()).then(d=>{ alert(d.message); });
-        }
-
-        function showPlaylist() {
-            fetch('/playlist/list').then(r=>r.json()).then(data=>{
-                const holder = document.getElementById('playlist_holder');
-                const items = document.getElementById('playlist_items');
-                items.innerHTML = '';
-                data.playlist.forEach((it, idx)=>{
-                    const div = document.createElement('div');
-                    div.style.display = 'flex'; div.style.justifyContent = 'space-between'; div.style.gap='10px'; div.style.padding='8px 0';
-                    div.innerHTML = `<div style="flex:1">${idx+1}. ${it}</div>`;
-                    const btns = document.createElement('div');
-                    btns.innerHTML = `<button onclick="fetch('/playlist/remove',{method:'POST',body:new URLSearchParams({video_file:'${it}'})}).then(r=>r.json()).then(()=>showPlaylist())">حذف</button> <button onclick="fetch('/playlist/move',{method:'POST',body:new URLSearchParams({from:${idx},to:${Math.max(0,idx-1)}})}).then(()=>showPlaylist())">▲</button> <button onclick="fetch('/playlist/move',{method:'POST',body:new URLSearchParams({from:${idx},to:${idx+1}})}).then(()=>showPlaylist())">▼</button>`;
-                    div.appendChild(btns);
-                    items.appendChild(div);
-                });
-                holder.style.display = 'block';
-            });
-        }
-
-        function startPlaylist() {
-            const key = document.getElementById('pl_stream_key').value;
-            const shuffle = document.getElementById('pl_shuffle').checked;
-            const repeat = document.getElementById('pl_repeat').checked;
-            const fd = new URLSearchParams({stream_key: key, shuffle: shuffle, repeat: repeat});
-            fetch('/playlist/start', { method: 'POST', body: fd })
-            .then(r=>r.json()).then(d=>{ alert(d.message); });
-        }
-
-        function stopPlaylist() {
-            fetch('/playlist/stop', { method: 'POST' }).then(r=>r.json()).then(d=>{ alert(d.message); });
-        }
-
-        // Scheduler functions
-        function addSchedule() {
-            const video = document.getElementById('sched_video').value;
-            const time = document.getElementById('sched_time').value;
-            const duration = document.getElementById('sched_duration').value || 0;
-            if(!video || !time) { alert('اختر الفيديو وحدد التوقيت'); return; }
-            const fd = new URLSearchParams({video_file: video, start_time: time, duration_hours: duration});
-            fetch('/schedule/add', { method: 'POST', body: fd }).then(r=>r.json()).then(d=>{ alert(d.message); });
-        }
-
-        function listSchedule() {
-            fetch('/schedule/list').then(r=>r.json()).then(d=>{
-                const el = document.getElementById('sched_list');
-                el.style.display = 'block';
-                el.innerText = JSON.stringify(d.jobs, null, 2);
-            });
-        }
-
-        // File manager
-        function getDiskUsage() {
-            fetch('/disk_usage').then(r=>r.json()).then(d=>{
-                document.getElementById('disk_info').innerText = `المجموع: ${d.total_mb} MB | المستخدم: ${d.used_mb} MB | المتبقي: ${d.free_mb} MB`;
-            });
-        }
-
-        function renameVideo() {
-            const oldn = document.getElementById('rename_old').value;
-            const newn = document.getElementById('rename_new').value;
-            if(!oldn || !newn) { alert('ادخل الاسمين'); return; }
-            const fd = new URLSearchParams({old: oldn, new: newn});
-            fetch('/rename', { method: 'POST', body: fd }).then(r=>r.json()).then(d=>{ alert(d.message); if(d.status==='success') location.reload(); });
-        }
-
-        function renamePrompt(name) {
-            const newName = prompt('الاسم الجديد للملف:', name);
-            if(!newName) return;
-            const fd = new URLSearchParams({old: name, new: newName});
-            fetch('/rename', { method: 'POST', body: fd }).then(r=>r.json()).then(d=>{ alert(d.message); if(d.status==='success') location.reload(); });
-        }
-
-        function downloadFile(name) {
-            const url = '/download?file=' + encodeURIComponent(name);
-            window.location = url;
-        }
-
-        // Delegate file manager buttons to avoid inline JS quoting issues
-        document.addEventListener('click', function(e) {
-            const d = e.target;
-            if (d.matches('.delete-btn')) {
-                const name = d.dataset.file;
-                deleteVideo(name);
-            } else if (d.matches('.download-btn')) {
-                const name = d.dataset.file;
-                const url = '/download?file=' + encodeURIComponent(name);
-                window.location = url;
-            } else if (d.matches('.rename-btn')) {
-                const name = d.dataset.file;
-                renamePrompt(name);
-            }
-        });
     </script>
     {% endif %}
 
