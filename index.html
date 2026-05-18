@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم بالبث الرقمي الآمن</title>
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: #151f32;
+            --border-color: #243552;
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+            --primary: #38bdf8;
+            --success: #10b981;
+            --danger: #ef4444;
+            --terminal-bg: #05070c;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        h1, h2, h3 {
+            color: var(--text-main);
+            margin-top: 0;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        input[type="text"], input[type="password"], select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        input:focus, select:focus {
+            outline: 2px solid var(--primary);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        .checkbox-group input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            color: #fff;
+        }
+
+        button:hover { opacity: 0.9; }
+
+        .btn-primary { background-color: var(--primary); color: #000; }
+        .btn-success { background-color: var(--success); }
+        .btn-danger { background-color: var(--danger); }
+        .btn-secondary { background-color: transparent; border: 1px solid var(--border-color); color: var(--text-main); }
+        .btn-ghost { background: none; border: 1px dashed rgba(255,255,255,0.06); color: var(--text-main); }
+
+        button.small { padding:6px 8px; font-size:13px; }
+
+        .video-item div button:hover, .card button:hover { transform: translateY(-1px); }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .status-on { background-color: rgba(16, 185, 129, 0.2); color: var(--success); }
+        .status-off { background-color: rgba(239, 68, 68, 0.2); color: var(--danger); }
+
+        .video-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .video-item:last-child { border-bottom: none; }
+        .video-info { display: flex; flex-direction: column; gap: 4px; }
+        .video-name { font-weight: 500; color: var(--text-main); word-break: break-all; }
+        .video-meta { font-size: 13px; color: var(--text-muted); }
+        .btn-delete { width: auto; padding: 6px 12px; font-size: 13px; background-color: var(--danger); }
+
+        .terminal {
+            background-color: var(--terminal-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            font-family: monospace;
+            font-size: 13px;
+            color: #38bdf8;
+            height: 170px;
+            overflow-y: auto;
+            direction: ltr;
+            text-align: left;
+            white-space: pre-wrap;
+            margin-top: 10px;
+            display: none;
+        }
+
+        #playlist_items { max-height: 160px; overflow:auto; border-top:1px solid var(--border-color); padding-top:8px; }
+
+        .header-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .logout-link { color: var(--danger); text-decoration: none; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    {% if login_required %}
+    <div class="card" style="margin-top: 100px;">
+        <h2 style="text-align: center;">🔒 نظام البث محمي</h2>
+        <p style="text-align: center; color: var(--text-muted);">الرجاء إدخال كلمة السر للمتابعة</p>
+        <div class="form-group">
+            <input type="password" id="login_pass" placeholder="كلمة المرور">
+        </div>
+        <button class="btn-primary" onclick="submitLogin()">دخول</button>
+    </div>
+
+    <script>
+        function submitLogin() {
+            const pass = document.getElementById('login_pass').value;
+            const formData = new FormData();
+            formData.append('password', pass);
+            fetch('/login', { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === 'success') { location.reload(); }
+                else { alert(data.message); }
+            });
+        }
+    </script>
+
+    {% else %}
+    <div class="header-area">
+        <h1>📺 لوحة تحكم البث 24/7</h1>
+        <a href="/logout" class="logout-link">تسجيل الخروج 🔓</a>
+    </div>
+
+    <div class="card">
+        <h2>📡 إدارة البث المباشر</h2>
+        {% if streaming %}
+            <div class="status-badge status-on">● البث يعمل حالياً ومستمر</div>
+            <button class="btn-danger" onclick="stopStream()">🛑 إيقاف البث فوراً</button>
+        {% else %}
+            <div class="status-badge status-off">○ البث متوقف حالياً</div>
+            <div class="form-group">
+                <label>مفتاح بث يوتيوب (Stream Key):</label>
+                <input type="text" id="stream_key" placeholder="XXXX-XXXX-XXXX-XXXX">
+            </div>
+            <div class="form-group">
+                <label>اختر الفيديو للبث:</label>
+                <select id="video_file">
+                    <option value="">-- اختر من الفيديوهات المحملة --</option>
+                    {% for video in videos %}
+                        <option value="{{ video.name }}">{{ video.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="checkbox-group">
+                    <input type="checkbox" id="loop_video" checked>
+                    <span>تفعيل التكرار التلقائي واللانهائي للملف 🔁</span>
+                </label>
+            </div>
+            <button class="btn-success" onclick="startStream()">🚀 بدء البث الآن</button>
+        {% endif %}
+    </div>
+
+    <div class="card">
+        <h2>📥 تحميل فيديو جديد من يوتيوب</h2>
+        <div class="form-group">
+            <label>رابط فيديو اليوتيوب:</label>
+            <input type="text" id="youtube_url" placeholder="https://www.youtube.com/watch?v=...">
+        </div>
+        <button class="btn-primary" id="btn_download" onclick="downloadVideo()">ابدأ التحميل الآن</button>
+        
+        <div class="form-group" style="margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 15px;">
+            <label>🍪 تحديث ملف الكوكيز الذكي (cookies.txt):</label>
+            <div style="display: flex; gap: 10px;">
+                <input type="file" id="cookies_file" accept=".txt" style="background: var(--bg-color); color: white; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; flex-grow: 1;">
+                <button class="btn-primary" style="width: auto; white-space: nowrap; padding: 0 20px; color:#000;" onclick="uploadCookies()">رفع 📤</button>
+            </div>
+        </div>
+
+        <div id="log_header" style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; display: none;">
+            <label style="margin: 0;">📄 لوج التحميل الحي:</label>
+            <button class="btn-primary" id="btn_copy_log" style="width: auto; padding: 4px 12px; font-size: 13px; color: #000;" onclick="copyLog()">نسخ اللوج 📋</button>
+        </div>
+        <div class="terminal" id="log_terminal"></div>
+    </div>
+
+    <div class="card">
+        <h2>📂 الفيديوهات المخزنة بالسيرفر ({{ videos|length }})</h2>
+        {% if not videos %}
+            <p style="color: var(--text-muted); text-align: center;">لا توجد فيديوهات محملة حالياً.</p>
+        {% else %}
+            <div>
+                {% for video in videos %}
+                    <div class="video-item">
+                        <div class="video-info">
+                            <span class="video-name">{{ video.name }}</span>
+                            <span class="video-meta">⏱️ المدة: {{ video.duration }} | 💾 الحجم: {{ video.size }}</span>
+                        </div>
+                        <div style="display:flex; gap:8px; align-items:center;">
+                            <button class="btn-primary rename-btn" data-file="{{ video.name|e }}" style="padding:6px 10px;">✏️ تعديل</button>
+                            <button class="btn-primary download-btn" data-file="{{ video.name|e }}" style="padding:6px 10px;">⬇️ تنزيل</button>
+                            <button class="btn-delete delete-btn" data-file="{{ video.name|e }}">حذف 🗑️</button>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="card">
+        <h2>🔀 قائمة التشغيل (Playlist)</h2>
+        <div class="form-group">
+            <label>اختر فيديو لإضافته للقائمة:</label>
+            <select id="playlist_select">
+                <option value="">-- اختر فيديو --</option>
+                {% for video in videos %}
+                    <option value="{{ video.name }}">{{ video.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div style="display:flex; gap:10px; margin-bottom:10px;">
+            <button class="btn-primary" style="flex:1;" onclick="addToPlaylist()">أضف للقائمة ➕</button>
+            <button class="btn-primary" style="flex:1;" onclick="showPlaylist()">عرض القائمة 🔎</button>
+        </div>
+        <div class="form-group">
+            <label class="checkbox-group"><input type="checkbox" id="pl_shuffle"> تفعيل التكرار العشوائي (Shuffle)</label>
+            <label class="checkbox-group" style="margin-top:8px;"><input type="checkbox" id="pl_repeat"> تكرار القائمة بالكامل (Repeat)</label>
+        </div>
+        <div style="display:flex; gap:10px;">
+            <input type="text" id="pl_stream_key" placeholder="مفتاح البث (عند البدء من خلال القائمة)">
+            <button class="btn-success" style="width:180px;" onclick="startPlaylist()">▶️ بدء القائمة</button>
+            <button class="btn-danger" style="width:140px;" onclick="stopPlaylist()">■ إيقاف القائمة</button>
+        </div>
+        <div id="playlist_holder" style="margin-top:12px; display:none;">
+            <h3 style="margin:8px 0;">عناصر القائمة:</h3>
+            <div id="playlist_items"></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>🕒 جدولة البث (Scheduler)</h2>
+        <div class="form-group">
+            <label>اختر فيديو للجدولة:</label>
+            <select id="sched_video">
+                <option value="">-- اختر فيديو --</option>
+                {% for video in videos %}
+                    <option value="{{ video.name }}">{{ video.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label>تاريخ ووقت البداية:</label>
+            <input type="datetime-local" id="sched_time">
+        </div>
+        <div class="form-group">
+            <label>مدة البث بالساعات (عشري، اختياري):</label>
+            <input type="number" step="0.01" min="0" id="sched_duration" placeholder="مثلاً: 1.25">
+            <div style="color:var(--text-muted); font-size:13px; margin-top:6px;">ادخل القيمة بالساعات، مثلاً 1.5 تعني ساعة ونصف.</div>
+        </div>
+        <div style="display:flex; gap:10px;">
+            <button class="btn-primary" style="flex:1;" onclick="addSchedule()">أضف للجدولة ✅</button>
+            <button class="btn-primary" style="flex:1;" onclick="listSchedule()">عرض المهام المجدولة</button>
+        </div>
+        <div id="sched_list" style="margin-top:12px; display:none; color: var(--text-muted);"></div>
+    </div>
+
+    <div class="card">
+        <h2>🗄️ مدير الملفات + سعة التخزين</h2>
+        <div style="display:flex; gap:10px; margin-bottom:10px;">
+            <button class="btn-primary" onclick="getDiskUsage()">عرض المساحة المتبقية</button>
+            <button class="btn-primary" onclick="location.reload()">تحديث القائمة</button>
+        </div>
+        <div class="form-group">
+            <label>إعادة تسمية ملف:</label>
+            <input type="text" id="rename_old" placeholder="الاسم الحالي">
+            <input type="text" id="rename_new" placeholder="الاسم الجديد" style="margin-top:8px;">
+            <button class="btn-primary" style="margin-top:8px;" onclick="renameVideo()">إعادة التسمية</button>
+        </div>
+        <div id="disk_info" style="margin-top:12px; color: var(--text-muted);"></div>
+    </div>
+
+    <script>
+        function startStream() {
+            const key = document.getElementById('stream_key').value;
+            const file = document.getElementById('video_file').value;
+            const loop = document.getElementById('loop_video').checked;
+            
+            const formData = new FormData();
+            formData.append('stream_key', key);
+            formData.append('video_file', file);
+            formData.append('loop', loop);
+
+            fetch('/start', { method: 'POST', body: formData })
+            .then(res => res.json()).then(data => {
+                alert(data.message);
+                if(data.status === 'success') location.reload();
+            });
+        }
+
+        function stopStream() {
+            fetch('/stop', { method: 'POST' })
+            .then(res => res.json()).then(data => {
+                alert(data.message);
+                location.reload();
+            });
+        }
+
+        function deleteVideo(filename) {
+            if(!confirm(`هل أنت متأكد من حذف الفيديو: ${filename}؟`)) return;
+            const formData = new FormData();
+            formData.append('video_file', filename);
+
+            fetch('/delete', { method: 'POST', body: formData })
+            .then(res => res.json()).then(data => {
+                alert(data.message);
+                location.reload();
+            });
+        }
+
+        function uploadCookies() {
+            const fileInput = document.getElementById('cookies_file');
+            if (fileInput.files.length === 0) {
+                alert("الرجاء اختيار ملف cookies.txt أولاً من جهازك!");
+                return;
+            }
+            const formData = new FormData();
+            formData.append('cookies_file', fileInput.files[0]);
+
+            fetch('/upload_cookies', { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(data => {
+                alert(data.message);
+                if(data.status === 'success') location.reload();
+            });
+        }
+
+        function copyLog() {
+            const terminal = document.getElementById('log_terminal');
+            if (!terminal.innerText.trim()) {
+                alert("لا يوجد لوج لنسخه حالياً!");
+                return;
+            }
+            navigator.clipboard.writeText(terminal.innerText)
+            .then(() => alert("📋 تم نسخ اللوج بالكامل إلى الحافظة!"))
+            .catch(err => alert("فشل النسخ: " + err));
+        }
+
+        function downloadVideo() {
+            const url = document.getElementById('youtube_url').value;
+            if(!url) { alert("الرجاء وضع رابط صحيح"); return; }
+
+            const btn = document.getElementById('btn_download');
+            const terminal = document.getElementById('log_terminal');
+            const logHeader = document.getElementById('log_header');
+            
+            btn.disabled = true;
+            btn.innerText = "جاري الاتصال والتحميل...";
+            terminal.style.display = "block";
+            logHeader.style.display = "flex";
+            terminal.innerHTML = "بدء الاتصال بالسيرفر...\n";
+
+            const eventSource = new EventSource(`/download_progress?url=${encodeURIComponent(url)}`);
+
+            eventSource.onmessage = function(event) {
+                terminal.innerHTML += event.data + "\n";
+                terminal.scrollTop = terminal.scrollHeight;
+
+                if (event.data.includes("[DONE]") || event.data.includes("[ERROR]")) {
+                    eventSource.close();
+                    btn.disabled = false;
+                    btn.innerText = "ابدأ التحميل الآن";
+                    if(event.data.includes("[DONE]")) {
+                        alert("اكتمل التحميل بنجاح!");
+                        location.reload();
+                    } else {
+                        alert("حدث خطأ أثناء التحميل، تفقد اللوج الأسود.");
+                    }
+                }
+            };
+
+            eventSource.onerror = function() {
+                eventSource.close();
+                btn.disabled = false;
+                btn.innerText = "ابدأ التحميل الآن";
+                terminal.innerHTML += "\n[ERROR] انقطع الاتصال المباشر بالسيرفر.";
+            };
+        }
+
+        // Playlist functions
+        function addToPlaylist() {
+            const sel = document.getElementById('playlist_select').value;
+            if(!sel) { alert('اختر فيديو أولاً'); return; }
+            const fd = new FormData(); fd.append('video_file', sel);
+            fetch('/playlist/add', { method: 'POST', body: fd })
+            .then(r=>r.json()).then(d=>{ alert(d.message); });
+        }
+
+        function showPlaylist() {
+            fetch('/playlist/list').then(r=>r.json()).then(data=>{
+                const holder = document.getElementById('playlist_holder');
+                const items = document.getElementById('playlist_items');
+                items.innerHTML = '';
+                data.playlist.forEach((it, idx)=>{
+                    const div = document.createElement('div');
+                    div.style.display = 'flex'; div.style.justifyContent = 'space-between'; div.style.gap='10px'; div.style.padding='8px 0';
+                    div.innerHTML = `<div style="flex:1">${idx+1}. ${it}</div>`;
+                    const btns = document.createElement('div');
+                    btns.innerHTML = `<button onclick="fetch('/playlist/remove',{method:'POST',body:new URLSearchParams({video_file:'${it}'})}).then(r=>r.json()).then(()=>showPlaylist())">حذف</button> <button onclick="fetch('/playlist/move',{method:'POST',body:new URLSearchParams({from:${idx},to:${Math.max(0,idx-1)}})}).then(()=>showPlaylist())">▲</button> <button onclick="fetch('/playlist/move',{method:'POST',body:new URLSearchParams({from:${idx},to:${idx+1}})}).then(()=>showPlaylist())">▼</button>`;
+                    div.appendChild(btns);
+                    items.appendChild(div);
+                });
+                holder.style.display = 'block';
+            });
+        }
+
+        function startPlaylist() {
+            const key = document.getElementById('pl_stream_key').value;
+            const shuffle = document.getElementById('pl_shuffle').checked;
+            const repeat = document.getElementById('pl_repeat').checked;
+            const fd = new URLSearchParams({stream_key: key, shuffle: shuffle, repeat: repeat});
+            fetch('/playlist/start', { method: 'POST', body: fd })
+            .then(r=>r.json()).then(d=>{ alert(d.message); });
+        }
+
+        function stopPlaylist() {
+            fetch('/playlist/stop', { method: 'POST' }).then(r=>r.json()).then(d=>{ alert(d.message); });
+        }
+
+        // Scheduler functions
+        function addSchedule() {
+            const video = document.getElementById('sched_video').value;
+            const time = document.getElementById('sched_time').value;
+            const duration = document.getElementById('sched_duration').value || 0;
+            if(!video || !time) { alert('اختر الفيديو وحدد التوقيت'); return; }
+            const fd = new URLSearchParams({video_file: video, start_time: time, duration_hours: duration});
+            fetch('/schedule/add', { method: 'POST', body: fd }).then(r=>r.json()).then(d=>{ alert(d.message); });
+        }
+
+        function listSchedule() {
+            fetch('/schedule/list').then(r=>r.json()).then(d=>{
+                const el = document.getElementById('sched_list');
+                el.style.display = 'block';
+                el.innerText = JSON.stringify(d.jobs, null, 2);
+            });
+        }
+
+        // File manager
+        function getDiskUsage() {
+            fetch('/disk_usage').then(r=>r.json()).then(d=>{
+                document.getElementById('disk_info').innerText = `المجموع: ${d.total_mb} MB | المستخدم: ${d.used_mb} MB | المتبقي: ${d.free_mb} MB`;
+            });
+        }
+
+        function renameVideo() {
+            const oldn = document.getElementById('rename_old').value;
+            const newn = document.getElementById('rename_new').value;
+            if(!oldn || !newn) { alert('ادخل الاسمين'); return; }
+            const fd = new URLSearchParams({old: oldn, new: newn});
+            fetch('/rename', { method: 'POST', body: fd }).then(r=>r.json()).then(d=>{ alert(d.message); if(d.status==='success') location.reload(); });
+        }
+
+        function renamePrompt(name) {
+            const newName = prompt('الاسم الجديد للملف:', name);
+            if(!newName) return;
+            const fd = new URLSearchParams({old: name, new: newName});
+            fetch('/rename', { method: 'POST', body: fd }).then(r=>r.json()).then(d=>{ alert(d.message); if(d.status==='success') location.reload(); });
+        }
+
+        function downloadFile(name) {
+            const url = '/download?file=' + encodeURIComponent(name);
+            window.location = url;
+        }
+
+        // Delegate file manager buttons to avoid inline JS quoting issues
+        document.addEventListener('click', function(e) {
+            const d = e.target;
+            if (d.matches('.delete-btn')) {
+                const name = d.dataset.file;
+                deleteVideo(name);
+            } else if (d.matches('.download-btn')) {
+                const name = d.dataset.file;
+                const url = '/download?file=' + encodeURIComponent(name);
+                window.location = url;
+            } else if (d.matches('.rename-btn')) {
+                const name = d.dataset.file;
+                renamePrompt(name);
+            }
+        });
+    </script>
+    {% endif %}
+
+</div>
+</body>
+</html>
