@@ -2,8 +2,6 @@ from flask import Flask, render_template, request, jsonify, session, Response, s
 import subprocess
 import os
 import signal
-import urllib.request
-import json
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'super-secret-key-12345')
@@ -36,7 +34,7 @@ def check_process_status():
     """التحقق مما إذا كان البث قد توقف تلقائياً بسبب انتهاء الوقت"""
     global ffmpeg_process
     if ffmpeg_process is not None:
-        if ffmpeg_process.poll() is not None: # العملية انتهت
+        if ffmpeg_process.poll() is not None:
             ffmpeg_process = None
 
 @app.route('/')
@@ -110,7 +108,6 @@ def start_stream():
     loop_flag = "-stream_loop -1 " if loop_enabled else ""
     duration_flag = f"-t {duration} " if duration != '0' else ""
     
-    # تمت إضافة مدة البث للكود
     cmd = f'ffmpeg -re {loop_flag}-i "{video_path}" {duration_flag}-c:v copy -c:a copy -f flv "{rtmp_url}"'
 
     try:
@@ -150,39 +147,6 @@ def delete_video():
         return jsonify({"status": "error", "message": "الملف غير موجود أصلاً."})
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)})
-
-# مسار جديد لسحب الإحصائيات من يوتيوب
-@app.route('/api/stats')
-def get_stats():
-    api_key = request.args.get('api_key')
-    video_id = request.args.get('video_id')
-    
-    if not api_key or not video_id:
-        return jsonify({"error": "البيانات ناقصة"})
-        
-    url = f"https://www.googleapis.com/youtube/v3/videos?part=liveStreamingDetails,statistics&id={video_id}&key={api_key}"
-    
-    try:
-        req = urllib.request.urlopen(url)
-        data = json.loads(req.read())
-        
-        if data.get('items'):
-            item = data['items'][0]
-            stats = item.get('statistics', {})
-            live_details = item.get('liveStreamingDetails', {})
-            
-            # إذا لم يكن البث مباشراً الآن
-            if 'concurrentViewers' not in live_details:
-                return jsonify({"error": "الفيديو ليس بثاً مباشراً نشطاً"})
-                
-            return jsonify({
-                "viewers": live_details.get('concurrentViewers', '0'),
-                "likes": stats.get('likeCount', '0'),
-                "total_views": stats.get('viewCount', '0')
-            })
-        return jsonify({"error": "الفيديو غير موجود أو الرابط خاطئ"})
-    except Exception as e:
-        return jsonify({"error": "تأكد من مفتاح الـ API"})
 
 @app.route('/download_progress')
 def download_progress():
